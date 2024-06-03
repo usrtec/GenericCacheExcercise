@@ -37,18 +37,8 @@ public class GenericCache<TKey, TValue> : IEnumerable where TKey : notnull
                 _cachedData[key].UsedLast = DateTime.UtcNow;
             }
 
-            if (_cachedData.Count >= _config.Threshold)
-            {
-                var itemToRemove = _cachedData.Values.MinBy(x => x.UsedLast);
-
-                if (itemToRemove != null)
-                {
-                    CacheFull?.Invoke(this, new CacheFullEventArgs<TValue>(itemToRemove.Value));
-
-                    _cachedData.Remove(itemToRemove.Key);
-                }
-            }
-        }
+            Evict();
+        }        
     }
 
     private GenericCache() { }
@@ -70,6 +60,21 @@ public class GenericCache<TKey, TValue> : IEnumerable where TKey : notnull
         foreach (var item in _cachedData)
         {
             yield return item;
+        }
+    }
+
+    public void Evict()
+    {
+        if (_cachedData.Count > _config.Threshold)
+        {
+            var itemToRemove = _cachedData.Values.MinBy(x => x.UsedLast);
+
+            if (itemToRemove != null)
+            {
+                CacheFull?.Invoke(this, new CacheFullEventArgs<TValue>(itemToRemove.Value));
+
+                _cachedData.Remove(itemToRemove.Key);
+            }
         }
     }
 }
