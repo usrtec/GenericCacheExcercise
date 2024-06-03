@@ -63,7 +63,7 @@ public class GenericCache<TKey, TValue> : IEnumerable where TKey : notnull
         }
     }
 
-    public void Evict()
+    private void Evict()
     {
         if (_cachedData.Count > _config.Threshold)
         {

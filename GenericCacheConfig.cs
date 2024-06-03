@@ -2,7 +2,7 @@
 
 public class GenericCacheConfig
 {
-    public int Threshold { get; init; }
+    internal int Threshold { get; init; }
 
     public GenericCacheConfig(int threshold)
     {
